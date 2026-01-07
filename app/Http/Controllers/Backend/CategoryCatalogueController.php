@@ -1,0 +1,100 @@
+<?php
+
+namespace App\Http\Controllers\Backend;
+
+use App\Http\Controllers\Controller;
+use App\Models\CategoryCatalogue;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+
+class CategoryCatalogueController extends Controller
+{
+    public $title, $base_url;
+    public function __construct()
+    {
+        $this->title = 'Kategori Catalogue';
+        $this->base_url = url('backend/category-catalogue');
+    }
+    public function index()
+    {
+        $data['collection'] = CategoryCatalogue::when(request('search'), function ($query, $search) {
+            return $query->where('title', 'like', '%' . $search . '%')
+                ->orWhere('judul', 'like', '%' . $search . '%');
+        })->orderBy('order', 'ASC')->paginate(10);
+        $data['title'] = $this->title;
+        $data['base_url'] = $this->base_url;
+        return view('backend.category_catalogue.index', $data);
+    }
+
+    public function add()
+    {
+        $data['title'] = $this->title;
+        $data['base_url'] = $this->base_url;
+        return view('backend.category_catalogue.add', $data);
+    }
+
+    function store(Request $req)
+    {
+        try {
+            $create = CategoryCatalogue::create([
+                'title' => $req->title,
+                'judul' => $req->judul,
+                'order' => $req->order ?? 0,
+                'file' => ($req->file) ? $this->uploadNormal($req->file, 'category-catalogue') : null,
+                'visible' => $req->visible ? 'yes' : 'no',
+                'url' => Str::slug($req->title ?? $req->judul),
+            ]);
+            return [
+                'code' => 200,
+                'success' => true,
+                'url' => $this->base_url
+            ];
+        } catch (\Throwable $th) {
+            return errors($th);
+        }
+    }
+
+    public function edit($id)
+    {
+        $data['item'] = CategoryCatalogue::find($id);
+        $data['title'] = $this->title;
+        $data['base_url'] = $this->base_url;
+        return view('backend.category_catalogue.edit', $data);
+    }
+
+    function update(Request $req)
+    {
+        try {
+            $data = CategoryCatalogue::find($req->id);
+            $data->update([
+                'title' => $req->title,
+                'judul' => $req->judul,
+                'file' => ($req->file) ? $this->uploadNormal($req->file, 'category-catalogue') : $data->file,
+                'order' => $req->order ?? $data->order,
+                'url' => Str::slug($req->title ?? $req->judul),
+                'visible' => $req->visible ? 'yes' : 'no'
+            ]);
+            return [
+                'code' => 200,
+                'success' => true,
+                'url' => $this->base_url
+            ];
+        } catch (\Throwable $th) {
+            return errors($th);
+        }
+    }
+
+    function delete(Request $req)
+    {
+        try {
+            $data = CategoryCatalogue::find($req->id);
+            $data->delete();
+            return [
+                'code' => 200,
+                'success' => true,
+            ];
+        } catch (\Throwable $th) {
+            return errors($th);
+        }
+    }
+}
