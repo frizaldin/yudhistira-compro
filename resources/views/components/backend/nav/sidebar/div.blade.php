@@ -70,6 +70,52 @@
                         titlegroup="Blog" />
 
                     <x-backend.nav.sidebar.menudropdown icon="iconoir-calendar" :menu="[
+                        [
+                            'url' => url('backend/blog-teacher-hubs'),
+                            'key' => 'blog_teacher_hubs',
+                            'icon' => 'iconoir-calendar',
+                        ],
+                        [
+                            'url' => url('backend/category-teacher-hubs'),
+                            'key' => 'category_teacher_hubs',
+                            'icon' => 'iconoir-folder',
+                        ],
+                    ]" :authority="$authority"
+                        titlegroup="Artikel Guru" />
+
+                    <x-backend.nav.sidebar.menudropdown icon="iconoir-calendar" :menu="[
+                        [
+                            'url' => url('backend/announcement-teacher-hubs'),
+                            'key' => 'announcement_teacher_hubs',
+                            'icon' => 'iconoir-calendar',
+                        ],
+                        [
+                            'url' => url('backend/category-announcement-teacher-hubs'),
+                            'key' => 'category_announcement_teacher_hubs',
+                            'icon' => 'iconoir-folder',
+                        ],
+                    ]" :authority="$authority"
+                        titlegroup="Pengumuman Guru" />
+
+                    <x-backend.nav.sidebar.menudropdown icon="iconoir-calendar" :menu="[
+                        [
+                            'url' => url('backend/event-teacher-hubs'),
+                            'key' => 'event_teacher_hubs',
+                            'icon' => 'iconoir-calendar',
+                        ],
+                    ]" :authority="$authority"
+                        titlegroup="Event Guru" />
+
+                    <x-backend.nav.sidebar.menudropdown icon="iconoir-medal" :menu="[
+                        [
+                            'url' => url('backend/teacher-rewards'),
+                            'key' => 'teacher_reward',
+                            'icon' => 'iconoir-medal',
+                        ],
+                    ]" :authority="$authority"
+                        titlegroup="Reward Guru" />
+
+                    <x-backend.nav.sidebar.menudropdown icon="iconoir-calendar" :menu="[
                         ['url' => url('backend/events'), 'key' => 'events', 'icon' => 'iconoir-calendar'],
                         ['url' => url('backend/category-event'), 'key' => 'category_event', 'icon' => 'iconoir-folder'],
                     ]" :authority="$authority"
@@ -86,9 +132,13 @@
                         ['url' => url('/user/customer'), 'key' => 'user.customer', 'icon' => 'iconoir-user'],
                     ]" :authority="$authority"
                         titlegroup="Manajemen User" />
-                    <li class="menu-label mt-2">
-                        <span>Setting</span>
-                    </li>
+
+                    @if (auth()->user()->auhority_id == 1)
+                        <li class="menu-label mt-2">
+                            <span>Setting</span>
+                        </li>
+                    @endif
+
                     <x-backend.nav.sidebar.menu url="{{ url('backend/social_media') }}" key="social_media"
                         icon="iconoir-settings" :authority="$authority" />
                     <x-backend.nav.sidebar.menu url="{{ url('backend/configuration') }}" key="configuration"

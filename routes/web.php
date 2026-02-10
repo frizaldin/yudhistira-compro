@@ -378,6 +378,54 @@ Route::prefix('backend')->group(function () {
             Route::get('/edit/{id}', 'edit');
             Route::post('/update', 'update');
         });
+        Route::prefix('blog-teacher-hubs')->name('blog_teacher_hubs')->controller(\App\Http\Controllers\Backend\BlogTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('category-teacher-hubs')->name('category_teacher_hubs')->controller(\App\Http\Controllers\Backend\CategoryTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('announcement-teacher-hubs')->name('announcement_teacher_hubs')->controller(\App\Http\Controllers\Backend\AnnouncementTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('category-announcement-teacher-hubs')->name('category_announcement_teacher_hubs')->controller(\App\Http\Controllers\Backend\CategoryAnnouncementTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('event-teacher-hubs')->name('event_teacher_hubs')->controller(\App\Http\Controllers\Backend\EventTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('teacher-rewards')->name('teacher_reward')->controller(\App\Http\Controllers\Backend\TeacherRewardController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
         Route::prefix('category-event')->name('category_event')->controller(\App\Http\Controllers\Backend\CategoryEventController::class)->group(function () {
             Route::get('/', 'index');
             Route::get('/add', 'add');
