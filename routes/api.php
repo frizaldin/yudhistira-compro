@@ -8,7 +8,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// Teacher Hub API - Public untuk Mobile Apps
+// Teacher Hub API
 Route::prefix('v1')->group(function () {
     Route::get('/blog-teacher-hubs', [TeacherHubApiController::class, 'blogTeacherHubs']);
     Route::get('/blog-teacher-hubs/{id}', [TeacherHubApiController::class, 'blogTeacherHubDetail']);
