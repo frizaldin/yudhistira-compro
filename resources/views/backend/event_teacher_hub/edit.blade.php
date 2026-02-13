@@ -23,6 +23,15 @@
                         @csrf
                         <input type="hidden" name="id" value="{{ $item->id }}">
                         <div class="form-group">
+                            <label>Kategori Event</label>
+                            <select name="category_id" class="form-control">
+                                <option value="">Pilih Kategori</option>
+                                @foreach ($category as $cat)
+                                    <option value="{{ $cat->id }}" @selected($cat->id == $item->category_id)>{{ $cat->judul ?: $cat->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Title (English)</label>
                             <input type="text" name="title" class="form-control" required value="{{ $item->title }}">
                         </div>

@@ -22,6 +22,15 @@
                         method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
+                            <label>Kategori Event</label>
+                            <select name="category_id" class="form-control">
+                                <option value="">Pilih Kategori</option>
+                                @foreach ($category as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->judul ?: $cat->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Title (English)</label>
                             <input type="text" name="title" class="form-control" required>
                         </div>

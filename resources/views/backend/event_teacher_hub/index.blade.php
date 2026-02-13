@@ -4,7 +4,8 @@
             <h4 class="page-title">Event Guru</h4>
             <div class="d-flex align-items-center">
                 <div class="me-3">
-                    <a href="{{ url('backend/event-teacher-hubs/add') }}" class="btn btn-primary"><i class="fa fa-plus mr-1"></i>
+                    <a href="{{ url('backend/event-teacher-hubs/add') }}" class="btn btn-primary"><i
+                            class="fa fa-plus mr-1"></i>
                         Tambah Data</a>
                 </div>
                 <div class="">
@@ -26,6 +27,7 @@
                                         <th>#</th>
                                         <th>Foto</th>
                                         <th>Judul</th>
+                                        <th>Kategori</th>
                                         <th>Tanggal</th>
                                         <th>Waktu</th>
                                         <th>Point</th>
@@ -38,8 +40,9 @@
                                         <tr id="data-{{ $item->id }}">
                                             <td style="width: 50px;">{{ $loop->iteration }}</td>
                                             <td>
-                                                @if($item->photo)
-                                                    <img style="width: 100px;" src="{{ asset($item->photo) }}" alt="" />
+                                                @if ($item->photo)
+                                                    <img style="width: 100px;" src="{{ asset($item->photo) }}"
+                                                        alt="" />
                                                 @else
                                                     -
                                                 @endif
@@ -48,9 +51,10 @@
                                                 {{ $item->title }} <br>
                                                 <small class="text-muted">{{ $item->judul }}</small>
                                             </td>
+                                            <td>{{ $item->category ? ($item->category->judul ?: $item->category->title) : '-' }}</td>
                                             <td>{{ $item->date ? date('d M Y', strtotime($item->date)) : '-' }}</td>
                                             <td>
-                                                @if($item->start_time || $item->end_time)
+                                                @if ($item->start_time || $item->end_time)
                                                     {{ $item->start_time ? date('H:i', strtotime($item->start_time)) : '-' }}
                                                     -
                                                     {{ $item->end_time ? date('H:i', strtotime($item->end_time)) : '-' }}
@@ -60,14 +64,20 @@
                                             </td>
                                             <td>{{ $item->point ?? '-' }}</td>
                                             <td>{{ $item->user?->name ?? '-' }}</td>
-                                            <td style="width: 10%;">
+                                            <td style="width: 15%;">
+                                                <a href="{{ url('backend/event-teacher-hub-questions/' . $item->id) }}"
+                                                    class="btn btn-sm btn-warning" title="Pertanyaan"><i
+                                                        class="fa fa-question-circle"></i></a>
                                                 <a href="{{ url('backend/event-teacher-hubs/edit/' . $item->id) }}"
-                                                    class="btn btn-sm btn-info" title="Edit"><i class="fa fa-edit"></i></a>
+                                                    class="btn btn-sm btn-info" title="Edit"><i
+                                                        class="fa fa-edit"></i></a>
                                                 <form action="{{ url('backend/event-teacher-hubs/delete') }}"
-                                                    style="display:inline-block" class="deleteForm-{{ $item->id }}">
+                                                    style="display:inline-block"
+                                                    class="deleteForm-{{ $item->id }}">
                                                     @csrf
                                                     <input type="hidden" name="id" value="{{ $item->id }}">
-                                                    <button type="button" onclick="return confirmation('{{ $item->id }}')"
+                                                    <button type="button"
+                                                        onclick="return confirmation('{{ $item->id }}')"
                                                         class="btn btn-danger btn-sm">
                                                         <i class="fa fa-trash"></i>
                                                     </button>

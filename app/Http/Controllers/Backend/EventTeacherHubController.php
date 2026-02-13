@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryEventTeacherHub;
 use App\Models\EventTeacherHub;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,7 @@ class EventTeacherHubController extends Controller
 {
     public function index()
     {
-        $data['collection'] = EventTeacherHub::when(request('search'), function ($query, $search) {
+        $data['collection'] = EventTeacherHub::with('category')->when(request('search'), function ($query, $search) {
             return $query->where('title', 'like', '%' . $search . '%')
                 ->orWhere('judul', 'like', '%' . $search . '%');
         })->when(Auth::user()->authorities_id != 1, function ($query) {
@@ -22,13 +23,15 @@ class EventTeacherHubController extends Controller
 
     public function add()
     {
-        return view('backend.event_teacher_hub.add');
+        $data['category'] = CategoryEventTeacherHub::orderBy('order')->orderBy('title')->get();
+        return view('backend.event_teacher_hub.add', $data);
     }
 
     function store(Request $req)
     {
         try {
             EventTeacherHub::create([
+                'category_id' => $req->category_id ?: null,
                 'title' => $req->title,
                 'judul' => $req->judul ?? '',
                 'photo' => ($req->photo) ? $this->uploadNormal($req->photo, 'EventTeacherHub') : '',
@@ -52,6 +55,7 @@ class EventTeacherHubController extends Controller
     public function edit($id)
     {
         $data['item'] = EventTeacherHub::find($id);
+        $data['category'] = CategoryEventTeacherHub::orderBy('order')->orderBy('title')->get();
         return view('backend.event_teacher_hub.edit', $data);
     }
 
@@ -60,6 +64,7 @@ class EventTeacherHubController extends Controller
         try {
             $data = EventTeacherHub::find($req->id);
             $data->update([
+                'category_id' => $req->category_id ?: null,
                 'title' => $req->title,
                 'judul' => $req->judul ?? $data->judul,
                 'photo' => ($req->photo) ? $this->uploadNormal($req->photo, 'EventTeacherHub') : $data->photo,
