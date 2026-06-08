@@ -6,10 +6,40 @@ use App\Models\Product;
 use App\Models\Portfolio;
 use App\Models\Blog;
 use App\Models\Service;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/welcome', function () {
     return view('welcome');
+});
+
+Route::get('/test-mail', function () {
+    $to    = request('to', config('mail.from.address'));
+    $start = microtime(true);
+    try {
+        Mail::raw('Test email dari ' . config('app.name') . ' — ' . now(), function ($msg) use ($to) {
+            $msg->to($to)->subject('[Test Mail] ' . config('app.name') . ' - ' . now());
+        });
+        $elapsed = round((microtime(true) - $start) * 1000);
+        return response()->json([
+            'success'  => true,
+            'message'  => "Email berhasil dikirim ke {$to}",
+            'driver'   => config('mail.default'),
+            'host'     => config('mail.mailers.' . config('mail.default') . '.host'),
+            'port'     => config('mail.mailers.' . config('mail.default') . '.port'),
+            'from'     => config('mail.from.address'),
+            'elapsed_ms' => $elapsed,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'driver'  => config('mail.default'),
+            'host'    => config('mail.mailers.' . config('mail.default') . '.host'),
+            'port'    => config('mail.mailers.' . config('mail.default') . '.port'),
+            'from'    => config('mail.from.address'),
+        ], 500);
+    }
 });
 
 Route::get('/logout', [\App\Http\Controllers\Backend\AuthController::class, 'logout']);
@@ -80,6 +110,7 @@ Route::prefix('teacher-hub')->name('teacher.')->controller(\App\Http\Controllers
     Route::post('/logout', 'logout')->name('logout');
     Route::middleware('auth:teacher')->group(function () {
         Route::get('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('/event-completion', 'eventCompletion')->name('event-completion');
     });
 });
 
@@ -541,6 +572,200 @@ Route::prefix('backend')->group(function () {
             Route::post('/delete', 'delete');
             Route::get('/edit/{id}', 'edit');
             Route::post('/update', 'update');
+        });
+
+        // Teacher Hub modules
+        Route::prefix('digital-learning-supports')->name('digital_learning_support')->controller(\App\Http\Controllers\Backend\DigitalLearningSupportController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('category-guide-books')->name('category_guide_book')->controller(\App\Http\Controllers\Backend\CategoryGuideBookController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('guide-books')->name('guide_book')->controller(\App\Http\Controllers\Backend\GuideBookController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('tutorial-videos')->name('tutorial_videos')->controller(\App\Http\Controllers\Backend\TutorialVideoController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('category-event-teacher-hubs')->name('category_event_teacher_hubs')->controller(\App\Http\Controllers\Backend\CategoryEventTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('event-teacher-hubs')->name('event_teacher_hubs')->controller(\App\Http\Controllers\Backend\EventTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('event-teacher-hub-questions')->name('event_teacher_hub_question')->controller(\App\Http\Controllers\Backend\EventTeacherHubQuestionController::class)->group(function () {
+            Route::get('/{event_id}', 'index');
+            Route::get('/add/{event_id}', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('blog-teacher-hubs')->name('blog_teacher_hubs')->controller(\App\Http\Controllers\Backend\BlogTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('category-teacher-hubs')->name('category_teacher_hubs')->controller(\App\Http\Controllers\Backend\CategoryTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('announcement-teacher-hubs')->name('announcement_teacher_hubs')->controller(\App\Http\Controllers\Backend\AnnouncementTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('category-announcement-teacher-hubs')->name('category_announcement_teacher_hubs')->controller(\App\Http\Controllers\Backend\CategoryAnnouncementTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('event-teacher-hubs')->name('event_teacher_hubs')->controller(\App\Http\Controllers\Backend\EventTeacherHubController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('teacher-rewards')->name('teacher_reward')->controller(\App\Http\Controllers\Backend\TeacherRewardController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+        });
+        Route::prefix('support-centers')->name('support_centers')->controller(\App\Http\Controllers\Backend\SupportCenterController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::put('/{id}/status', 'updateStatus');
+            Route::post('/{id}/chat', 'storeChat');
+            Route::put('/chats/{chatId}', 'updateChat');
+            Route::delete('/chats/{chatId}', 'destroyChat');
+            Route::get('/{id}', 'show');
+        });
+        Route::prefix('open-tickets')->name('open_tickets')->controller(\App\Http\Controllers\Backend\OpenTicketController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::put('/{id}/status', 'updateStatus');
+            Route::post('/{id}/chat', 'storeChat');
+            Route::put('/chats/{chatId}', 'updateChat');
+            Route::delete('/chats/{chatId}', 'destroyChat');
+            Route::get('/{id}', 'show');
+        });
+        Route::prefix('request-books')->name('request_books')->controller(\App\Http\Controllers\Backend\RequestBookController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::post('/update/{id}', 'update');
+            Route::get('/{id}', 'show');
+        });
+        Route::prefix('buku-buy')->name('buku_buy')->controller(\App\Http\Controllers\Backend\BukuBuyController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/documents/{productId}', 'documents');
+            Route::post('/documents', 'storeDocument');
+            Route::delete('/documents/{id}', 'destroyDocument');
+        });
+        Route::prefix('creative-teachers')->name('creative_teachers')->controller(\App\Http\Controllers\Backend\CreativeTeacherController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::put('/{id}/status', 'updateStatus');
+            Route::get('/{id}', 'show');
+        });
+        Route::prefix('teachers')->name('teachers')->controller(\App\Http\Controllers\Backend\TeacherController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+            Route::post('/status', 'updateStatus');
+            Route::get('/password/{id}', 'password');
+            Route::post('/change-password', 'changePassword');
+        });
+        Route::prefix('category-video-learnings')->name('category_video_learning')->controller(\App\Http\Controllers\Backend\CategoryVideoLearningController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+            Route::post('/delete', 'delete');
+        });
+        Route::prefix('serial-code-ebook')->name('serial_code_ebook')->controller(\App\Http\Controllers\Backend\RedeemCodeController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+            Route::get('/import', 'importView');
+            Route::post('/import', 'import');
+            Route::get('/template', 'template');
+        });
+        Route::prefix('serial-code-member')->name('serial_code_member')->controller(\App\Http\Controllers\Backend\RedeemCodeMemberController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::post('/delete', 'delete');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+            Route::get('/books', 'fetchBooks');
+        });
+        Route::prefix('video-learnings')->name('video_learnings')->controller(\App\Http\Controllers\Backend\VideoLearningController::class)->group(function () {
+            Route::post('/videos/store', 'videoStore');
+            Route::post('/videos/update', 'videoUpdate');
+            Route::post('/videos/delete', 'videoDelete');
+            Route::post('/quiz/store', 'quizStore');
+            Route::post('/quiz/update', 'quizUpdate');
+            Route::post('/quiz/delete', 'quizDelete');
+            Route::get('/', 'index');
+            Route::get('/add', 'add');
+            Route::post('/store', 'store');
+            Route::get('/edit/{id}', 'edit');
+            Route::post('/update', 'update');
+            Route::post('/delete', 'delete');
+            Route::get('/{id}/videos', 'videosIndex');
+            Route::get('/{id}/videos/add', 'videoAdd');
+            Route::get('/{id}/videos/{videoId}/edit', 'videoEdit');
+            Route::get('/{id}/quiz', 'quizIndex');
+            Route::get('/{id}/quiz/add', 'quizAdd');
+            Route::get('/{id}/quiz/{questionId}/edit', 'quizEdit');
         });
     });
 });

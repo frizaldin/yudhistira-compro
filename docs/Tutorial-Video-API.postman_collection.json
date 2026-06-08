@@ -1,0 +1,46 @@
+{
+  "info": {
+    "name": "Tutorial Video API",
+    "description": "Contoh request untuk API Tutorial Video",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/yudhistira-compro/system/public/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "List Tutorial Video",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tutorial-videos",
+          "host": ["{{base_url}}"],
+          "path": ["tutorial-videos"],
+          "query": [
+            { "key": "per_page", "value": "15", "description": "Jumlah per halaman (1-100)" },
+            { "key": "page", "value": "1", "description": "Halaman" },
+            { "key": "search", "value": "", "description": "Cari di title/judul", "disabled": true }
+          ]
+        },
+        "description": "Daftar tutorial video (public, tidak perlu auth)."
+      }
+    },
+    {
+      "name": "Detail Tutorial Video",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tutorial-videos/1",
+          "host": ["{{base_url}}"],
+          "path": ["tutorial-videos", "1"]
+        },
+        "description": "Detail satu tutorial video by ID. Ganti 1 dengan id yang ada."
+      }
+    }
+  ]
+}
