@@ -7,7 +7,6 @@ use App\Models\City;
 use App\Models\MataPelajaran;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -54,7 +53,7 @@ class SignUpController extends Controller
      */
     private function data(Request $req)
     {
-        $cities = Cache::remember('cities', '9000', function() {
+        $cities = Cache::remember('cities', '9000', function () {
             return City::orderBy('province_code', 'asc')->get();
         });
 
@@ -72,54 +71,80 @@ class SignUpController extends Controller
          * VALIDATED
          */
         $req->validate([
-            'code_sales'         => 'required|string|max:50',
-            'name'               => 'required|string|max:100',
-            'domisili'           => 'required|string|max:100',
-            'email'              => 'required|email|unique:teachers,email',
-            'phone'              => 'required|string|max:15',
-            'school_name'        => 'required|string|max:150',
-            'teaching_field'     => 'required|string|max:100',
-            'gender'             => [
+            'code_sales'            => 'required|string|max:50',
+            'npsn'                  => 'required|string|max:100',
+            'name'                  => 'required|string|max:100',
+            'domisili'              => 'required|string|max:100',
+            'email'                 => 'required|email|unique:teachers,email',
+            'phone'                 => 'required|string|max:15',
+            'school_name'           => 'required|string|max:150',
+            'teaching_field'        => 'required|string|max:100',
+            'gender'                => [
                 'required',
                 Rule::in(['laki-laki', 'perempuan']),
             ],
-            'birth_date'         => 'required|date',
-            'password'           => 'required|string|min:8',
+            'birth_date'            => 'required|date',
+            'password'              => 'required|string|min:8',
             'confirmation_password' => 'required|same:password',
         ]);
-
+    
         /**
          * CHECK KODE SALES
          */
-        $__checkSales = Http::withHeaders([
-            'key' => env('API_KEY'),
-        ])->post(env('API_URL').'check/referral_sales', [
-            'referral_code' => $req->code_sales
-        ]);
-        $checkSales = $__checkSales->json();
-        if ($checkSales['code'] != 200) {
-            throw new InvalidArgumentException('Invalid Kode Referral Sales', 500);
+        try {
+            $__checkSales = Http::withHeaders([
+                'key' => config('services.api.key'),
+            ])->post(config('services.api.url') . 'check/referral_sales', [
+                'referral_code' => $req->code_sales
+            ]);
+    
+            $checkSales = $__checkSales->json();
+    
+            if (!$__checkSales->successful() || ($checkSales['code'] ?? null) != 200) {
+                return response()->json([
+                    'code'    => 422,
+                    'success' => false,
+                    'errors'  => ['code_sales' => ['Kode referral sales tidak valid.']],
+                    'message' => 'Kode referral sales tidak valid.',
+                ], 422);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'code'    => 500,
+                'success' => false,
+                'errors'  => [],
+                'message' => 'Gagal menghubungi server verifikasi sales. Coba beberapa saat lagi.',
+            ], 500);
         }
-
+    
         /**
-         * CONTAINER
+         * STORE DATA
          */
         $post = $req->only([
-            'code_sales', 'name', 'domisili', 'email', 'phone', 'school_name', 'teaching_field', 'birth_date'
+            'code_sales',
+            'npsn',
+            'name',
+            'domisili',
+            'email',
+            'phone',
+            'school_name',
+            'teaching_field',
+            'gender',
+            'birth_date',
         ]);
-        $post = array_merge($post, [
-            'password' => Hash::make($req->password)
-        ]);
-
+    
+        $post['password'] = Hash::make($req->password);
+    
         $store = Teacher::create($post);
-
-        if (!$token = Auth::guard('api')->login($store)) {
-            throw new InvalidArgumentException('Email atau password salah', 500);
-        }
-
-        return [
-            'access_token' => $token,
-            'data' => $store,
-        ];
+        $store->sendEmailVerificationNotification();
+    
+        return response()->json([
+            'code'    => 201,
+            'success' => true,
+            'message' => 'Registrasi berhasil. Silakan cek email Anda untuk verifikasi sebelum login.',
+            'data'    => [
+                'email' => $store->email,
+            ],
+        ], 201);
     }
 }

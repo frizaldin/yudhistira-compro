@@ -69,8 +69,9 @@ class OpenTicketApiController extends Controller
      * GET /api/v1/open-tickets/{id}
      * Detail satu tiket (hanya milik guru yang login).
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int|string $id): JsonResponse
     {
+        $id = (int) $id;
         try {
             $teacher = Auth::guard('api')->user();
             if (!$teacher) {
@@ -190,8 +191,9 @@ class OpenTicketApiController extends Controller
      * PUT /api/v1/open-tickets/update/{id}
      * Update tiket (hanya milik guru yang login).
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int|string $id): JsonResponse
     {
+        $id = (int) $id;
         try {
             $teacher = Auth::guard('api')->user();
             if (!$teacher) {
@@ -248,8 +250,9 @@ class OpenTicketApiController extends Controller
      * DELETE /api/v1/open-tickets/delete/{id}
      * Hapus tiket milik guru yang login (beserta lampiran dan file di disk).
      */
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(Request $request, int|string $id): JsonResponse
     {
+        $id = (int) $id;
         try {
             $teacher = Auth::guard('api')->user();
             if (!$teacher) {

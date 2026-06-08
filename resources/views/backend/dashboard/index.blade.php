@@ -228,6 +228,180 @@
                         </div>
                     </div>
                 @endforeach
+            @elseif (auth()->user()->authorities_id == 5)
+                {{-- Statistik Teacher Hub (hanya untuk authority_id == 5) --}}
+                @foreach ($teacher_hub_stats ?? [] as $stat)
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card bg-corner-img">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-9">
+                                        <p class="text-muted text-uppercase mb-0 fw-normal fs-13">{{ $stat['label'] }}
+                                        </p>
+                                        <h4 class="mt-1 mb-0 fw-medium">{{ number_format($stat['count']) }}</h4>
+                                    </div>
+                                    <div class="col-3 align-self-center">
+                                        <div
+                                            class="d-flex justify-content-center align-items-center thumb-md border-dashed border-{{ $stat['color'] }} rounded mx-auto">
+                                            <i
+                                                class="{{ $stat['icon'] }} fs-22 align-self-center mb-0 text-{{ $stat['color'] }}"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+                {{-- Tabel ranking guru (hanya untuk authority_id == 5) --}}
+                <div class="col-12 mt-4">
+                    <h5 class="mb-3">Ranking Guru</h5>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Guru dengan Point Terbanyak</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 c_list">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th class="text-end">Total Point</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($top_teachers_by_points ?? [] as $idx => $t)
+                                            <tr>
+                                                <td>{{ $idx + 1 }}</td>
+                                                <td>{{ $t->name }}</td>
+                                                <td><small class="text-muted">{{ $t->email }}</small></td>
+                                                <td class="text-end fw-medium">
+                                                    {{ number_format($t->total_points ?? 0) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Belum ada data.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Guru Paling Aktif Ikut Event</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 c_list">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th class="text-end">Jumlah Event</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($top_teachers_by_events ?? [] as $idx => $t)
+                                            <tr>
+                                                <td>{{ $idx + 1 }}</td>
+                                                <td>{{ $t->name }}</td>
+                                                <td><small class="text-muted">{{ $t->email }}</small></td>
+                                                <td class="text-end fw-medium">
+                                                    {{ number_format($t->events_count ?? 0) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Belum ada data.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Guru Paling Aktif Video Learning</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 c_list">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th class="text-end">Video Selesai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($top_teachers_by_video_learnings ?? [] as $idx => $t)
+                                            <tr>
+                                                <td>{{ $idx + 1 }}</td>
+                                                <td>{{ $t->name }}</td>
+                                                <td><small class="text-muted">{{ $t->email }}</small></td>
+                                                <td class="text-end fw-medium">
+                                                    {{ number_format($t->video_completions_count ?? 0) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Belum ada data.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Guru Paling Aktif Bersuara</h6>
+                            <p class="text-muted small mb-0 mt-1">Open Ticket + Support Center + Creative Teacher</p>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 c_list">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($top_teachers_by_engagement ?? [] as $idx => $t)
+                                            <tr>
+                                                <td>{{ $idx + 1 }}</td>
+                                                <td>{{ $t->name }}</td>
+                                                <td><small class="text-muted">{{ $t->email }}</small></td>
+                                                <td class="text-end fw-medium">
+                                                    {{ number_format($t->engagement_count ?? 0) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Belum ada data.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @else
                 <div class="col-lg-3 col-md-6 col-sm-6">
                     <div class="card bg-corner-img">

@@ -15,14 +15,9 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->user() && !auth()->guard('company')->user() && !auth()->guard('supplier')->user()) {
+        if (!auth()->user()) {
             return redirect('backend/login');
-        } else if (auth()->user() && auth()->guard('company')->user() && auth()->guard('supplier')->user()) {
-            auth()->logout();
-            auth()->guard('company')->logout();
-            auth()->guard('supplier')->logout();
-            return redirect('backend/login');
-        }
+        } 
         return $next($request);
     }
 }

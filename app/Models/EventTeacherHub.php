@@ -16,6 +16,8 @@ class EventTeacherHub extends Model
         'end_time',
         'point',
         'link_meeting',
+        'completion_type',
+        'completion_token',
         'created_by'
     ];
 

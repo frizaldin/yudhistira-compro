@@ -68,6 +68,13 @@
                             <label>Link Meeting</label>
                             <input type="url" name="link_meeting" class="form-control" placeholder="https://...">
                         </div>
+                        <div class="form-group">
+                            <label>Metode Penyelesaian</label>
+                            <select name="completion_type" class="form-control">
+                                <option value="quiz">Kuis</option>
+                                <option value="link">Halaman Selesai (Link)</option>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </form>
                 </div>

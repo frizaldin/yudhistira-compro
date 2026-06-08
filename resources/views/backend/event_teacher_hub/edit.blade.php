@@ -76,6 +76,29 @@
                             <input type="url" name="link_meeting" class="form-control"
                                 value="{{ $item->link_meeting ?? '' }}" placeholder="https://...">
                         </div>
+                        <div class="form-group">
+                            <label>Metode Penyelesaian</label>
+                            <select name="completion_type" class="form-control" id="completion_type_select">
+                                <option value="quiz" {{ ($item->completion_type ?? 'quiz') == 'quiz' ? 'selected' : '' }}>Kuis</option>
+                                <option value="link" {{ ($item->completion_type ?? 'quiz') == 'link' ? 'selected' : '' }}>Halaman Selesai (Link)</option>
+                            </select>
+                        </div>
+                        @if(($item->completion_type ?? 'quiz') == 'link' && !empty($item->completion_token))
+                        @php
+                            $completionBaseUrl = \App\Models\Configuration::first()->event_completion_base_url ?? url('/');
+                            $fullUrl = $completionBaseUrl . '?token=' . $item->completion_token;
+                        @endphp
+                        <div class="form-group">
+                            <label>Link Halaman Selesai</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" value="{{ $fullUrl }}" readonly id="completionTokenInput">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('completionTokenInput').value); alert('Link disalin!');">Copy Link</button>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Bagikan link ini kepada peserta untuk mengklaim penyelesaian event.</small>
+                        </div>
+                        @endif
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </form>
                 </div>

@@ -21,6 +21,11 @@ class BlogAndEventTeacherHubApiController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = (int) $request->get('per_page', 20);
+        $page = (int) $request->get('page', 1);
+        $page = $page < 1 ? 1 : $page;
+        
+        $offset = ($page - 1) * $perPage;
+        
         $search = $request->get('search');
 
         $blogQuery = BlogTeacherHub::where('visible', 'yes')
@@ -110,7 +115,7 @@ class BlogAndEventTeacherHubApiController extends Controller
             });
 
         $total = $merged->count();
-        $data = $merged->take($perPage)->values()->toArray();
+        $data = $merged->slice($offset, $perPage)->values()->toArray();
 
         return response()->json([
             'success' => true,

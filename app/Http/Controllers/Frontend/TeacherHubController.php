@@ -30,6 +30,7 @@ class TeacherHubController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'fullName' => 'required|string|max:255',
+            'npsn' => 'required|string|max:100',
             'email' => 'required|email|unique:teachers,email',
             'phone' => 'required|string',
             'domisili' => 'required|string',
@@ -68,6 +69,7 @@ class TeacherHubController extends Controller
             $birthDate = Carbon::createFromFormat('d/m/Y', $request->birthDate)->format('Y-m-d');
 
             $teacher = Teacher::create([
+                'npsn' => $request->npsn,
                 'name' => $request->fullName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -162,5 +164,56 @@ class TeacherHubController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('teacher.login')->with('success', 'Anda telah logout.');
+    }
+
+    public function eventCompletion(Request $request)
+    {
+        $teacher = Auth::guard('teacher')->user();
+        if (!$teacher) {
+            return redirect()->route('teacher.login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $token = $request->query('token');
+        if (!$token) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Token penyelesaian tidak ditemukan.');
+        }
+
+        $event = \App\Models\EventTeacherHub::where('completion_token', $token)
+            ->where('completion_type', 'link')
+            ->first();
+
+        if (!$event) {
+            return redirect()->route('teacher.dashboard')->with('error', 'Link penyelesaian tidak valid atau sudah kadaluarsa.');
+        }
+
+        $hasCertificate = \App\Models\EventCertificate::where('event_id', $event->id)
+            ->where('user_id', $teacher->id)
+            ->exists();
+
+        if ($hasCertificate) {
+            return redirect()->route('teacher.dashboard')->with('success', 'Anda sudah menyelesaikan event ini sebelumnya.');
+        }
+
+        $pointValue = (int) ($event->point ?? 0);
+        if ($pointValue > 0) {
+            \App\Models\UserPoint::create([
+                'user_id' => $teacher->id,
+                'type'    => 'IN',
+                'point'   => $pointValue,
+                'source'  => 'webinar',
+                'origin'  => [
+                    'id'    => $event->id,
+                    'title' => $event->title,
+                    'judul' => $event->judul,
+                    'date'  => $event->date,
+                ],
+            ]);
+        }
+
+        \App\Models\EventCertificate::firstOrCreate(
+            ['event_id' => $event->id, 'user_id' => $teacher->id]
+        );
+
+        return redirect()->route('teacher.dashboard')->with('success', 'Event berhasil diselesaikan! Anda mendapatkan ' . $pointValue . ' point dan sertifikat telah tersedia.');
     }
 }

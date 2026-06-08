@@ -103,6 +103,25 @@ abstract class Controller
         }
     }
 
+    /**
+     * Upload file video (mp4, mkv, webm, dll). Max 200MB.
+     */
+    public function uploadVideo($file, $folder)
+    {
+        $maxSize = 200 * 1024 * 1024; // 200MB
+        if ($file->getSize() > $maxSize) {
+            throw new InvalidArgumentException('Ukuran file video maksimal 200MB', 400);
+        }
+        $path = 'storage/upload/' . $folder;
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = 'video_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
+        $file->move($path, $filename);
+        return 'storage/upload/' . $folder . '/' . $filename;
+    }
+
     function deleteFile($img)
     {
         if (file_exists($img)) {

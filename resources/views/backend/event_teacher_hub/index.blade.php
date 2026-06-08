@@ -65,6 +65,13 @@
                                             <td>{{ $item->point ?? '-' }}</td>
                                             <td>{{ $item->user?->name ?? '-' }}</td>
                                             <td style="width: 15%;">
+                                                @if(($item->completion_type ?? 'quiz') == 'link' && !empty($item->completion_token))
+                                                @php
+                                                    $completionBaseUrl = \App\Models\Configuration::first()->event_completion_base_url ?? url('/');
+                                                    $fullUrl = $completionBaseUrl . '?token=' . $item->completion_token;
+                                                @endphp
+                                                <button class="btn btn-sm btn-success" type="button" onclick="navigator.clipboard.writeText('{{ $fullUrl }}'); alert('Link disalin!');" title="Copy Link Penyelesaian"><i class="fa fa-link"></i></button>
+                                                @endif
                                                 <a href="{{ url('backend/event-teacher-hub-questions/' . $item->id) }}"
                                                     class="btn btn-sm btn-warning" title="Pertanyaan"><i
                                                         class="fa fa-question-circle"></i></a>

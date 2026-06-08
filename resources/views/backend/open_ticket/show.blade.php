@@ -73,6 +73,41 @@
             </div>
         </div>
 
+        {{-- Update Status & Beri Point --}}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Update Status & Beri Point</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url('backend/open-tickets/' . $item->id . '/status') }}" method="post">
+                    @csrf
+                    @method('PUT')
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select" required>
+                                <option value="new" {{ $item->status === 'new' ? 'selected' : '' }}>Baru</option>
+                                <option value="process" {{ $item->status === 'process' ? 'selected' : '' }}>Diproses</option>
+                                <option value="done" {{ $item->status === 'done' ? 'selected' : '' }}>Selesai</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Point (opsional)</label>
+                            <input type="number" name="point" class="form-control" min="0" placeholder="0" value="{{ old('point') }}">
+                            <small class="text-muted">Isi jika status Selesai & ingin beri point.</small>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Simpan Status</button>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Catatan point (opsional)</label>
+                            <input type="text" name="note" class="form-control" placeholder="Contoh: Open Ticket #{{ $item->ticket_number }} (selesai)" value="{{ old('note') }}">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         {{-- Riwayat Chat --}}
         <div class="row clearfix mt-5">
             <div class="col-12">

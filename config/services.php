@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Buy Buku Yudhistira API (produk & digital code) – pakai API_URL & API_KEY
+    |--------------------------------------------------------------------------
+    */
+    'buy_buku' => [
+        'base_url' => rtrim(env('API_URL', ''), '/'),
+        'api_key' => env('API_KEY', ''),
+    ],
+
 ];

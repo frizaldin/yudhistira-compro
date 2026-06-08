@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'visitor' => \App\Http\Middleware\LogVisitor::class,
+            'auth.teacher.api' => \App\Http\Middleware\EnsureTeacherApiAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

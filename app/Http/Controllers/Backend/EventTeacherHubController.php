@@ -30,6 +30,9 @@ class EventTeacherHubController extends Controller
     function store(Request $req)
     {
         try {
+            $completionType = $req->completion_type ?? 'quiz';
+            $completionToken = $completionType === 'link' ? \Illuminate\Support\Str::random(16) : null;
+
             EventTeacherHub::create([
                 'category_id' => $req->category_id ?: null,
                 'title' => $req->title,
@@ -40,6 +43,8 @@ class EventTeacherHubController extends Controller
                 'end_time' => !empty($req->end_time) ? $req->end_time : null,
                 'point' => $req->point ?? '',
                 'link_meeting' => $req->link_meeting ?? '',
+                'completion_type' => $completionType,
+                'completion_token' => $completionToken,
                 'created_by' => Auth::user()->id
             ]);
             return [
@@ -63,6 +68,15 @@ class EventTeacherHubController extends Controller
     {
         try {
             $data = EventTeacherHub::find($req->id);
+            
+            $completionType = $req->completion_type ?? 'quiz';
+            $completionToken = $data->completion_token;
+            if ($completionType === 'link' && empty($completionToken)) {
+                $completionToken = \Illuminate\Support\Str::random(16);
+            } elseif ($completionType !== 'link') {
+                $completionToken = null;
+            }
+
             $data->update([
                 'category_id' => $req->category_id ?: null,
                 'title' => $req->title,
@@ -72,7 +86,9 @@ class EventTeacherHubController extends Controller
                 'start_time' => !empty($req->start_time) ? $req->start_time : $data->start_time,
                 'end_time' => !empty($req->end_time) ? $req->end_time : $data->end_time,
                 'point' => $req->point ?? $data->point,
-                'link_meeting' => $req->link_meeting ?? $data->link_meeting
+                'link_meeting' => $req->link_meeting ?? $data->link_meeting,
+                'completion_type' => $completionType,
+                'completion_token' => $completionToken
             ]);
             return [
                 'code' => 200,

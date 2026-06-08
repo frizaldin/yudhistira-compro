@@ -41,8 +41,6 @@ class AuthController extends Controller
     function logout(Request $request)
     {
         auth()->guard('web')->logout();
-        auth()->guard('company')->logout();
-        auth()->guard('supplier')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');

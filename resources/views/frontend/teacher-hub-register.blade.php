@@ -21,7 +21,8 @@
                             Dapatkan informasi khusus guru dan pelatihan dengan mendaftar
                             Teachers Hub Yudhistira!
                         </p>
-                        <form class="teachers-hub-form" id="registerForm">
+                        <form class="teachers-hub-form" id="registerForm" method="post" action="{{ route('teacher.postRegister') }}">
+                            @csrf
                             <div class="form-group">
                                 <label for="fullName">Nama Lengkap</label>
                                 <input type="text" class="form-control" id="fullName" name="fullName"
@@ -63,6 +64,12 @@
                                 <label for="schoolName">Nama Sekolah</label>
                                 <input type="text" class="form-control" id="schoolName" name="schoolName"
                                     placeholder="Masukan nama sekolah" value="{{ old('schoolName') }}" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="npsn">NPSN</label>
+                                <input type="text" class="form-control" id="npsn" name="npsn" maxlength="100"
+                                    placeholder="Nomor Pokok Sekolah Nasional" value="{{ old('npsn') }}" required />
                             </div>
 
                             <div class="form-group">

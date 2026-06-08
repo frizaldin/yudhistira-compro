@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OpenTicket;
 use App\Models\OpenTicketChat;
 use App\Models\OpenTicketChatAttachment;
+use App\Models\UserPoint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -139,6 +140,40 @@ class OpenTicketController extends Controller
         });
 
         return redirect()->back()->with('success', 'Chat berhasil diupdate.');
+    }
+
+    /**
+     * Admin update status tiket (new, process, done).
+     * Jika status = done dan point > 0, beri point ke user dengan catatan (note).
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:new,process,done',
+            'point' => 'nullable|integer|min:0',
+            'note' => 'nullable|string|max:1000',
+        ]);
+
+        $ticket = OpenTicket::findOrFail($id);
+        $ticket->update(['status' => $request->input('status')]);
+
+        $point = (int) $request->input('point', 0);
+        $note = $request->input('note');
+        if ($ticket->status === 'done' && $point > 0) {
+            UserPoint::create([
+                'user_id' => $ticket->user_id,
+                'type'    => 'IN',
+                'point'   => $point,
+                'note'    => $note ?: 'Open Ticket #' . $ticket->ticket_number,
+                'source'  => 'support_center',
+                'origin'  => [
+                    'id'            => $ticket->id,
+                    'ticket_number' => $ticket->ticket_number,
+                ],
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diupdate.' . ($point > 0 ? " Point {$point} telah diberikan ke user." : ''));
     }
 
     /**

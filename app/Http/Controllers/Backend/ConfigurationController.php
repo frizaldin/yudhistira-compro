@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use InvalidArgumentException;
+
 
 class ConfigurationController extends Controller
 {
@@ -152,52 +154,63 @@ class ConfigurationController extends Controller
     {
         try {
             $data = Configuration::findOrFail($request->id);
-            if ($request->logo) {
-                $this->deleteFile($data->logo);
+            if(auth()->user()->authorities_id == 5) {
+                $data->update([
+                    'max_request' => $request->max_request, 
+                    'start_request' => $request->start_month.'-'.$request->start_day, 
+                    'end_request' => $request->end_month.'-'.$request->end_day, 
+                ]);
+            } else {
+                if ($request->logo) {
+                    $this->deleteFile($data->logo);
+                }
+                if ($request->favicon) {
+                    $this->deleteFile($data->favicon);
+                }
+                if ($request->logo_footer) {
+                    $this->deleteFile($data->logo_footer);
+                }
+                $data->update(array_merge($request->only('url'), [
+                    'event_completion_base_url' => $request->event_completion_base_url,
+                    'logo' => ($request->logo) ? $this->uploadNormal($request->logo, 'Configuration') : $data->logo,
+                    'favicon' => ($request->favicon) ? $this->uploadNormal($request->favicon, 'Configuration') : $data->favicon,
+                    'logo_footer' => ($request->logo_footer) ? $this->uploadNormal($request->logo_footer, 'Configuration') : $data->logo_footer,
+                    'name' => $request->name,
+                    'title' => $request->title,
+                    'meta_keyword' => $request->meta_keyword,
+                    'meta_description' => $request->meta_description,
+                    'meta_abstract' => $request->meta_abstract,
+                    'meta_seo' => $request->meta_seo,
+                    'meta_author' => $request->meta_author,
+                    'meta_title' => $request->meta_title,
+                    'map' => $request->map,
+                    'address' => $request->address,
+                    'email' => $request->email,
+                    'notelp' => $request->notelp,
+                    'wa' => $request->wa,
+                    'disclaimer' => $request->disclaimer,
+                    'google_analytics' => $request->google_analytics,
+                    'meta_pixel' => $request->meta_pixel,
+                    'short_description' => $request->short_description,
+                    'deskripsi_singkat' => $request->deskripsi_singkat,
+                    'tawkto' => $request->tawkto,
+                    'text_consult' => $request->text_consult,
+                    'digital_product_title' => $request->digital_product_title,
+                    'digital_product_judul' => $request->digital_product_judul,
+                    'digital_product_description' => $request->digital_product_description,
+                    'digital_product_deskripsi' => $request->digital_product_deskripsi,
+                    'service_title' => $request->service_title,
+                    'service_judul' => $request->service_judul,
+                    'service_description' => $request->service_description,
+                    'service_deskripsi' => $request->service_deskripsi,
+                    'contact_title' => $request->contact_title,
+                    'contact_judul' => $request->contact_judul,
+                    'contact_description' => $request->contact_description,
+                    'contact_deskripsi' => $request->contact_deskripsi,
+                    'certificate_temp' => $request->certificate_temp,
+                ]));
             }
-            if ($request->favicon) {
-                $this->deleteFile($data->favicon);
-            }
-            if ($request->logo_footer) {
-                $this->deleteFile($data->logo_footer);
-            }
-            $data->update(array_merge($request->only('url'), [
-                'logo' => ($request->logo) ? $this->uploadNormal($request->logo, 'Configuration') : $data->logo,
-                'favicon' => ($request->favicon) ? $this->uploadNormal($request->favicon, 'Configuration') : $data->favicon,
-                'logo_footer' => ($request->logo_footer) ? $this->uploadNormal($request->logo_footer, 'Configuration') : $data->logo_footer,
-                'name' => $request->name,
-                'title' => $request->title,
-                'meta_keyword' => $request->meta_keyword,
-                'meta_description' => $request->meta_description,
-                'meta_abstract' => $request->meta_abstract,
-                'meta_seo' => $request->meta_seo,
-                'meta_author' => $request->meta_author,
-                'meta_title' => $request->meta_title,
-                'map' => $request->map,
-                'address' => $request->address,
-                'email' => $request->email,
-                'notelp' => $request->notelp,
-                'wa' => $request->wa,
-                'disclaimer' => $request->disclaimer,
-                'google_analytics' => $request->google_analytics,
-                'meta_pixel' => $request->meta_pixel,
-                'short_description' => $request->short_description,
-                'deskripsi_singkat' => $request->deskripsi_singkat,
-                'tawkto' => $request->tawkto,
-                'text_consult' => $request->text_consult,
-                'digital_product_title' => $request->digital_product_title,
-                'digital_product_judul' => $request->digital_product_judul,
-                'digital_product_description' => $request->digital_product_description,
-                'digital_product_deskripsi' => $request->digital_product_deskripsi,
-                'service_title' => $request->service_title,
-                'service_judul' => $request->service_judul,
-                'service_description' => $request->service_description,
-                'service_deskripsi' => $request->service_deskripsi,
-                'contact_title' => $request->contact_title,
-                'contact_judul' => $request->contact_judul,
-                'contact_description' => $request->contact_description,
-                'contact_deskripsi' => $request->contact_deskripsi,
-            ]));
+            
             return [
                 'code' => 200,
                 'success' => true,
